@@ -26,6 +26,9 @@ ADD config/elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 # Install RethinkDB plugin for ElasticSearch: https://github.com/rethinkdb/elasticsearch-river-rethinkdb
 RUN ["/elasticsearch/bin/plugin", "--install", "river-rethinkdb", "--url", "http://goo.gl/JmMwTf"]
 
+# Install Admin UI
+RUN ["/elasticsearch/bin/plugin", "--install", "mobz/elasticsearch-head"]
+
 # Define working directory.
 WORKDIR /data
 
