@@ -8,7 +8,7 @@ initially started as to make it work with RethinkDB; but now also contains some 
 * removed `configuration` files; since everything will be within container
 * installed plugins
    * RethinkDB river
-   * HEAD
+   * [HEAD](https://github.com/mobz/elasticsearch-head)
 
 # Usage
 
@@ -28,6 +28,11 @@ for running container again later on make sure to use the `start` command:
 
 to make sure that it is running goto http://localhost:9200/
 
+# Additional differences from [dockerfile/elasticsearch](https://github.com/dockerfile/elasticsearch)
+
+## data volumes
+
+Decided not to use [data volume](https://docs.docker.com/userguide/dockervolumes/) since data will be fed from rethinkdb anyways; so it doesn't appear to be necessary.
 
 
 
@@ -44,6 +49,15 @@ make sure to run build from within the downloaded directory otherwise you will s
 ADD config/elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 config/elasticsearch.yml: no such file or directory
 ```
+
+##
+
+!!! Problem
+For some reason when installing plugins with Dockerfile they do appear in the file system but are not loaded by ES at startup.
+
+!!! Solution
+
+ES [[config|https://github.com/dockerfile/elasticsearch/blob/master/config/elasticsearch.yml]] specifies plugins to be located at the mounted `\data` volume; so need to remove it and point it locally. 
 
 ##
 
