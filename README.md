@@ -35,7 +35,7 @@ to make sure that it is running goto http://localhost:9200/
 
 You need to link `elasticsearch` and `rethinkdb` docker containers so that they exchange data.  
 > this assumes that you already have a `rethinkdb` docker container; if not here are the [instructions](https://github.com/dockerfile/rethinkdb)
-> here it is also assumed that your rethinkdb container is `--name`d `rethinkdb`
+> here it is also assumed that your rethinkdb container is `--name`d `rethinkdb`; if it is not use container id instead
 
 
 
@@ -79,6 +79,13 @@ Decided not to use [data volume](https://docs.docker.com/userguide/dockervolumes
 I've found these articles quite useful for making the decision:
 * http://www.tech-d.net/2014/11/03/docker-indepth-volumes/
 * https://docs.docker.com/userguide/dockervolumes/
+
+
+# minor tips
+
+for trouble shooting your image you might consider connecting to it as:
+
+`sudo docker start -d -i -t elasticsearch --entrypoint /bin/bash`
 
 
 
