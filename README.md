@@ -28,13 +28,57 @@ for running container again later on make sure to use the `start` command:
 
 to make sure that it is running goto http://localhost:9200/
 
+
+# Inegrating RethinkDB with ElasticSearch
+
+## Linking Containers
+
+You need to link `elasticsearch` and `rethinkdb` docker containers so that they exchange data.  
+> this assumes that you already have a `rethinkdb` docker container; if not here are the [instructions](https://github.com/dockerfile/rethinkdb)
+> here it is also assumed that your rethinkdb container is `--name`d `rethinkdb`
+
+
+
+## Setting up RethinkDB Link
+
+The needed plugin [elasticsearch-river-rethinkdb](https://github.com/rethinkdb/elasticsearch-river-rethinkdb) has already been installed through dockerfile.
+
+All you need to do is to point ES to the location of your db; which you can do by:
+
+```
+curl -XPUT localhost:9200/_river/rethinkdb/_meta -d '{
+   "type":"rethinkdb",
+   "rethinkdb": {
+     "databases": {"<DB>": {"<TABLE>": {"backfill": true}}},
+     "host": "localhost",
+     "port": 28015
+   }}'
+```
+
+> replace `<DB>` and `<TABLE>` with appropriate values
+
+To test it:
+
+`curl localhost:9200/<DB>/<TABLE>/_search?q=*:*`
+> replace `<DB>` and `<TABLE>` with appropriate values
+
+
+For more information see:
+* http://rethinkdb.com/docs/elasticsearch/
+* https://github.com/rethinkdb/elasticsearch-river-rethinkdb
+
+
+
+
 # Additional differences from [dockerfile/elasticsearch](https://github.com/dockerfile/elasticsearch)
 
 ## data volumes
 
 Decided not to use [data volume](https://docs.docker.com/userguide/dockervolumes/) since data will be fed from rethinkdb anyways; so it doesn't appear to be necessary.
 
-
+I've found these articles quite useful for making the decision:
+* http://www.tech-d.net/2014/11/03/docker-indepth-volumes/
+* https://docs.docker.com/userguide/dockervolumes/
 
 
 
