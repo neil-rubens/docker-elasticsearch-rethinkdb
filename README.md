@@ -57,16 +57,22 @@ The needed plugin [elasticsearch-river-rethinkdb](https://github.com/rethinkdb/e
 All you need to do is to point ES to the location of your db; which you can do by:
 
 ```
-curl -XPUT localhost:9200/_river/rethinkdb/_meta -d '{
+curl -XPUT <IP-ElasticSearch>:9200/_river/rethinkdb/_meta -d '{
    "type":"rethinkdb",
    "rethinkdb": {
      "databases": {"<DB>": {"<TABLE>": {"backfill": true}}},
-     "host": "localhost",
+     "host": "<IP-RethinkDB>",
      "port": 28015
    }}'
 ```
-
 > replace `<DB>` and `<TABLE>` with appropriate values
+> replace ips `<IP-ElasticSearch>`, `<IP-RethinkDB>` with ip issued by docker -- note it is different from localhost or 127.0.0.1 or 0.0.0.1 (since now you have several containers running on the same machine)
+>> you can look up ids by `docker inspect --format '{{ .NetworkSettings.IPAddress }}' <CID>`
+
+you should see: `{"_index":"_river","_type":"rethinkdb","_id":"_meta","_version":1,"created":true}`
+> if `"created":false`: means that something is wrong
+>> you might want to look at elasticsearch logs to get more details
+>> wrong ip's are common
 
 To test it:
 
