@@ -45,7 +45,12 @@ To link, `rethinkdb` container should already be running; and the you run the `e
 >> if your rethikdb container is not named you will need to specify its container id: `--link <CID>:elasticsearch-rethinkdb-link`
 
 
-For more information on linking see: https://docs.docker.com/userguide/dockerlinks/
+For more information on linking see:
+* https://blog.codecentric.de/en/2014/01/docker-networking-made-simple-3-ways-connect-lxc-containers/
+* https://docs.docker.com/userguide/dockerlinks/
+
+
+<Future Improvement> need to link containers; and use their assigned ip (provided as environmnet variables); described [here](https://blog.codecentric.de/en/2014/01/docker-networking-made-simple-3-ways-connect-lxc-containers/)
 
 
 ## Setting up feeding the data from RethinkDB to ElasticSearch
@@ -71,7 +76,7 @@ curl -XPUT <IP-ElasticSearch>:9200/_river/rethinkdb/_meta -d '{
 
 you should see: `{"_index":"_river","_type":"rethinkdb","_id":"_meta","_version":1,"created":true}`
 > if `"created":false`: means that something is wrong
->> you might want to look at elasticsearch logs to get more details
+>> you might want to look at elasticsearch logs `log/elasticsearch.log` to get more details
 >> wrong ip's are common
 
 To test it:
@@ -83,7 +88,7 @@ To test it:
 For more information see:
 * http://rethinkdb.com/docs/elasticsearch/
 * https://github.com/rethinkdb/elasticsearch-river-rethinkdb
-
+* http://www.elasticsearch.org/guide/en/elasticsearch/rivers/current/
 
 
 
@@ -126,6 +131,64 @@ For some reason when installing plugins with Dockerfile they do appear in the fi
 !!! Solution
 
 ES [[config|https://github.com/dockerfile/elasticsearch/blob/master/config/elasticsearch.yml]] specifies plugins to be located at the mounted `\data` volume; so need to remove it and point it locally. 
+
+##
+
+
+! Troubleshooting
+
+!! index is not created
+
+see `data/log/elasticsearch.log` for the error message; in my case it was:
+
+```
+[2015-01-13 03:38:25,674][WARN ][river                    ] [Wildpride] failed to create river [rethinkdb][rethinkdb]
+org.elasticsearch.common.settings.NoClassSettingsException: Failed to load class with value [rethinkdb]
+        at org.elasticsearch.river.RiverModule.loadTypeModule(RiverModule.java:87)
+        at org.elasticsearch.river.RiverModule.spawnModules(RiverModule.java:58)
+        at org.elasticsearch.common.inject.ModulesBuilder.add(ModulesBuilder.java:44)
+        at org.elasticsearch.river.RiversService.createRiver(RiversService.java:137)
+        at org.elasticsearch.river.RiversService$ApplyRivers$2.onResponse(RiversService.java:275)
+        at org.elasticsearch.river.RiversService$ApplyRivers$2.onResponse(RiversService.java:269)
+        at org.elasticsearch.action.support.TransportAction$ThreadedActionListener$1.run(TransportAction.java:113)
+        at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+        at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+        at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.ClassNotFoundException: rethinkdb
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:372)
+        at java.net.URLClassLoader$1.run(URLClassLoader.java:361)
+        at java.security.AccessController.doPrivileged(Native Method)
+        at java.net.URLClassLoader.findClass(URLClassLoader.java:360)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+        at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:308)
+        at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+        at org.elasticsearch.river.RiverModule.loadTypeModule(RiverModule.java:73)
+        ... 9 more
+
+```
+
+
+```
+[2015-01-13 07:08:11,667][INFO ][cluster.metadata         ] [Punchout] [_river] update_mapping [rethinkdb] (dynamic)
+[2015-01-13 07:08:11,716][ERROR][river.rethinkdb.feedworker] [] failed due to exception
+com.rethinkdb.RethinkDBException: java.net.ConnectException: Connection refused
+	at com.rethinkdb.SocketChannelFacade.connect(SocketChannelFacade.java:22)
+	at com.rethinkdb.RethinkDBConnection.reconnect(RethinkDBConnection.java:50)
+	at com.rethinkdb.RethinkDBConnection.<init>(RethinkDBConnection.java:45)
+	at com.rethinkdb.RethinkDBConnection.<init>(RethinkDBConnection.java:37)
+	at com.rethinkdb.RethinkDB.connect(RethinkDB.java:66)
+	at org.elasticsearch.river.rethinkdb.FeedWorker.connect(FeedWorker.java:44)
+	at org.elasticsearch.river.rethinkdb.FeedWorker.run(FeedWorker.java:67)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.net.ConnectException: Connection refused
+	at sun.nio.ch.Net.connect0(Native Method)
+	at sun.nio.ch.Net.connect(Net.java:457)
+	at sun.nio.ch.Net.connect(Net.java:449)
+	at sun.nio.ch.SocketChannelImpl.connect(SocketChannelImpl.java:647)
+	at com.rethinkdb.SocketChannelFacade.connect(SocketChannelFacade.java:20)
+	... 7 more
+[2015-01-13 07:08:11,719][INFO ][river.rethinkdb.feedworker] [] thread shutting down
+```
 
 ##
 
