@@ -18,7 +18,8 @@ RUN \
   mv /$ES_PKG_NAME /elasticsearch
 
 # Define mountable directories.
-VOLUME ["/data"]
+# NR: commented out; data will be fed through rethinkdb anyways
+#VOLUME ["/data"]
 
 # Mount elasticsearch.yml config
 # NR: commented out since want to keep things within container (such as plugins)
