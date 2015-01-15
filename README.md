@@ -7,8 +7,8 @@ initially started as to make it work with RethinkDB; but now also contains some 
 * removed `\data` volume since will be fed from db
 * removed `configuration` files; since everything will be within container
 * installed plugins
-   * RethinkDB river
-   * [HEAD](https://github.com/mobz/elasticsearch-head)
+  * [RethinkDB river](https://github.com/rethinkdb/elasticsearch-river-rethinkdb)
+  * [HEAD](https://github.com/mobz/elasticsearch-head) for troubleshooting
 
 # Usage
 
@@ -33,10 +33,19 @@ to make sure that it is running goto http://localhost:9200/
 
 ## Linking Containers
 
-You need to link `elasticsearch` and `rethinkdb` docker containers so that they exchange data.  
+You need to [link](https://docs.docker.com/userguide/dockerlinks/) `elasticsearch` and `rethinkdb` docker containers so that they can exchange data.  
 > this assumes that you already have a `rethinkdb` docker container; if not here are the [instructions](https://github.com/dockerfile/rethinkdb)
 > here it is also assumed that your rethinkdb container is `--name`d `rethinkdb`; if it is not use container id instead
 
+To link, `rethinkdb` container should already be running; and the you run the `elasticsearch` image as:
+
+`docker run -d -p 9200:9200 -p 9300:9300 --name elasticsearch --link rethinkdb:elasticsearch-rethinkdb-link activeintel/elasticsearch`
+
+> linking actually happens in this part `--link rethinkdb:elasticsearch-rethinkdb-link`
+>> if your rethikdb container is not named you will need to specify its container id: `--link <CID>:elasticsearch-rethinkdb-link`
+
+
+For more information on linking see: https://docs.docker.com/userguide/dockerlinks/
 
 
 ## Setting up RethinkDB Link
