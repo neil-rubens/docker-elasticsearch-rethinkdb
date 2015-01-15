@@ -48,7 +48,9 @@ To link, `rethinkdb` container should already be running; and the you run the `e
 For more information on linking see: https://docs.docker.com/userguide/dockerlinks/
 
 
-## Setting up RethinkDB Link
+## Setting up feeding the data from RethinkDB to ElasticSearch
+
+Now that your container are linked you can set up feeding the data from RethinkDB to ElasticSearch.
 
 The needed plugin [elasticsearch-river-rethinkdb](https://github.com/rethinkdb/elasticsearch-river-rethinkdb) has already been installed through dockerfile.
 
