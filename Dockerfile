@@ -21,7 +21,8 @@ RUN \
 VOLUME ["/data"]
 
 # Mount elasticsearch.yml config
-ADD config/elasticsearch.yml /elasticsearch/config/elasticsearch.yml
+# NR: commented out since want to keep things within container (such as plugins)
+# ADD config/elasticsearch.yml /elasticsearch/config/elasticsearch.yml
 
 # Install RethinkDB plugin for ElasticSearch: https://github.com/rethinkdb/elasticsearch-river-rethinkdb
 RUN ["/elasticsearch/bin/plugin", "--install", "river-rethinkdb", "--url", "http://goo.gl/JmMwTf"]
