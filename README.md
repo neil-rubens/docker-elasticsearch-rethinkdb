@@ -84,6 +84,11 @@ To test it:
 `curl localhost:9200/<DB>/<TABLE>/_search?q=*:*`
 > replace `<DB>` and `<TABLE>` with appropriate values
 
+optionally: you may want to save your container state commiting it to an image:
+`docker commit <CID> elasticsearch2`
+or you can continue running it by `docker start elasticsearch`
+> not for  large index files it take a little bit of time to initialize
+
 
 For more information see:
 * http://rethinkdb.com/docs/elasticsearch/
